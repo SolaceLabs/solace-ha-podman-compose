@@ -1,0 +1,166 @@
+version: '3'
+  
+x-environment:
+  &default-environment
+  system_scaling_maxconnectioncount: 100
+  username_admin_globalaccesslevel: admin
+  username_admin_password: admin
+  messagespool_maxspoolusage: 1500
+  service_ssh_port: 2222
+  service_semp_port: 8080
+  service_semp_tlsport: 1943
+  service_healthcheck_port: 5550
+  service_smf_port: 55555
+  service_smf_tlsport: 55443
+  messagevpn_default_service_amqp_port: 5674
+  messagevpn_default_service_amqp_tlsport: 5673
+  messagevpn_solace_service_amqp_port: 5672
+  messagevpn_solace_service_amqp_tlsport: 5671
+  messagevpn_default_service_mqtt_port: 1884
+  messagevpn_default_service_mqtt_tlsport: 8884
+  messagevpn_default_service_mqtt_webport: 8001
+  messagevpn_default_service_mqtt_tlswebport: 8444
+  messagevpn_solace_service_mqtt_port: 1883
+  messagevpn_solace_service_mqtt_tlsport: 8883
+  messagevpn_solace_service_mqtt_webport: 8000
+  messagevpn_solace_service_mqtt_tlswebport: 8443
+  messagevpn_default_service_rest_port: 9001
+  messagevpn_default_service_rest_tlsport: 9444
+  messagevpn_solace_service_rest_port: 9000
+  messagevpn_solace_service_rest_tlsport: 9443
+  service_webtransport_port: 8008
+  service_webtransport_tlsport: 1443
+  redundancy_enable: yes
+  redundancy_authentication_presharedkey_key: MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MTI=
+  redundancy_group_node_solaceprimary_nodetype: message_routing
+  redundancy_group_node_solaceprimary_connectvia: solaceprimary
+  redundancy_group_node_solacebackup_nodetype: message_routing
+  redundancy_group_node_solacebackup_connectvia: solacebackup
+  redundancy_group_node_solacemonitor_nodetype: monitoring
+  redundancy_group_node_solacemonitor_connectvia: solacemonitor
+  tls_servercertificate_passphrasefilepath: /var/lib/solace/passphrase.txt
+  redundancy_matelink_tls_enable: true
+  configsync_tls_enable: true
+
+x-common:
+  &default-common
+  image: solace/solace-pubsub-standard:10.1.1.29
+  shm_size: 1g
+  memory-swap: -1
+  memory-reservation: 0
+  user: 1000:1000
+  networks:
+    - solace
+
+services:
+  solaceprimary:
+    container_name: solaceprimary
+    hostname: solaceprimary.solace.local
+    volumes:
+      - ./storage/primary:/var/lib/solace:z
+    ports:
+      - "2222:2222"
+      - "8080:8080"
+      - "1943:1943"
+      - "5550:5550"
+      - "55555:55555"
+      - "55443:55443"
+      - "5672:5672"
+      - "5671:5671"
+      - "1883:1883"
+      - "8883:8883"
+      - "8000:8000"
+      - "8443:8443"
+      - "9000:9000"
+      - "9443:9443"
+      - "8008:8008"
+      - "1443:1443"
+      - "8741:8741"
+      - "8300:8300"
+      - "8301:8301"
+      - "8302:8302"
+      - "8301:8301/udp"
+      - "8302:8302/udp"
+    environment: 
+      << : *default-environment
+      routername: solaceprimary
+      nodetype: message_routing
+      configsync_enable: "yes"
+      redundancy_activestandbyrole: primary
+      tls_servercertificate_filepath: /var/lib/solace/solace_withkey.pem
+    << : *default-common
+
+  solacebackup:
+    container_name: solacebackup
+    hostname: solacebackup.solace.local
+    volumes:
+      - ./storage/backup:/var/lib/solace:z
+    ports:
+      - "3222:2222"
+      - "3080:8080"
+      - "3943:1943"
+      - "3550:5550"
+      - "35555:55555"
+      - "35443:55443"
+      - "3672:5672"
+      - "3671:5671"
+      - "3884:1883"
+      - "3883:8883"
+      - "3000:8000"
+      - "3443:8443"
+      - "3001:9000"
+      - "3444:9443"
+      - "3008:8008"
+      - "3445:1443"
+      - "3741:8741"
+      - "3300:8300"
+      - "3301:8301"
+      - "3302:8302"
+      - "3301:8301/udp"
+      - "3302:8302/udp"
+    environment:
+      << : *default-environment
+      routername: solacebackup
+      nodetype: message_routing
+      configsync_enable: "yes"
+      redundancy_activestandbyrole: backup
+      tls_servercertificate_filepath: /var/lib/solace/solace_withkey.pem
+    << : *default-common
+
+  solacemonitor:
+    container_name: solacemonitor
+    hostname: solacemonitor.solace.local
+    volumes:
+      - ./storage/monitor:/var/lib/solace:z
+    ports:
+      - "4222:2222"
+      - "4080:8080"
+      - "4943:1943"
+      - "4550:5550"
+      - "45555:55555"
+      - "45443:55443"
+      - "4672:5672"
+      - "4671:5671"
+      - "4883:1883"
+      - "4884:8883"
+      - "4000:8000"
+      - "4443:8443"
+      - "4001:9000"
+      - "4444:9443"
+      - "4008:8008"
+      - "4445:1443"
+      - "4741:8741"
+      - "4300:8300"
+      - "4301:8301"
+      - "4302:8302"
+      - "4301:8301/udp"
+      - "4302:8302/udp"
+    environment:
+      << : *default-environment
+      routername: solacemonitor
+      nodetype: monitoring
+      tls_servercertificate_filepath: /var/lib/solace/solace_withkey.pem
+    << : *default-common
+
+networks:
+  solace: {}
