@@ -1,7 +1,8 @@
 # solace-ha-podman-compose
 Configure a High-Availability group using Podman Compose in rootless mode.
 
-## Create a Linux user to run the containers (optional)
+## Getting started
+### Create a Linux user to run the containers (optional)
 First, create the group:
 ```
 sudo groupadd -g 1000 solace
@@ -23,7 +24,7 @@ less /etc/passwd
 solace:x:1000:1000::/home/solace:/bin/bash
 ```
 
-## Update the user's limits
+### Update the user's limits
 Reference: [Resource Limit Configuration](https://docs.solace.com/Software-Broker/Container-Tasks/rootless-containers.htm#Resource_Limit_Configuration)
 ```
 sudo vi /etc/security/limits.conf 
@@ -78,7 +79,7 @@ virtual memory              (kbytes, -v) unlimited
 file locks                          (-x) unlimited
 ```
 
-## Generate a server certificate for the brokers
+### Generate a server certificate for the brokers
 To enable TLS on the brokers, generate a self-signed certificate for the three nodes of the HA group (only for non-production):
 ```
 SUBJECT='/CN=solaceprimary.solace.local/O=Solace/OU=PSG/L=Paris/ST=PARIS/C=FR'
@@ -99,13 +100,13 @@ Generate a file containing the server certificate and its private key:
 cat solace.key solace.pem > solace_withkey.pem
 ```
 
-## Create and start the containers
+### Create and start the containers
 ```
 chmod u+x create-podman.sh
 ./create-podman.sh
 ```
 
-## Initialize config-sync
+### Initialize config-sync
 After starting the containers for the first time, you need to assert-leader the Message-VPNs because the newly configured brokers do not know which broker's configuration is to be synced.
 
 Either with SEMP:
@@ -128,7 +129,7 @@ assert-leader message-vpn solace
 y
 ```
 
-## Remove the certificate files from the broker storage
+### Remove the certificate files from the broker storage
 Delete the certificate file + the file containing the passphrase:
 ```
 sudo rm storage/primary/solace_withkey.pem
@@ -139,7 +140,7 @@ sudo rm storage/monitor/solace_withkey.pem
 sudo rm storage/monitor/passphrase.txt
 ```
 
-## Manage the containers
+### Manage the containers
 Stop the containers:
 ```
 podman-compose -f solace_ha-podman-compose.yaml stop
@@ -154,3 +155,23 @@ Start the containers:
 ```
 podman-compose -f solace_ha-podman-compose.yaml start
 ```
+## Documentation
+[Solace Rootless Containers](https://docs.solace.com/Software-Broker/Container-Tasks/rootless-containers.htm)
+[Podman compose, an implementation of Compose Spec with Podman](https://github.com/containers/podman-compose)
+[Exploring the Podman secret command](https://www.redhat.com/sysadmin/new-podman-secrets-command)
+
+## Resources
+This is not an officially supported Solace product.
+
+For more information try these resources:
+- Ask the [Solace Community](https://solace.community)
+- The Solace Developer Portal website at: https://solace.dev
+
+## Contributing
+Contributions are encouraged! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## Authors
+See the list of [contributors](https://github.com/solacecommunity/solace-ha-podman-compose/graphs/contributors) who participated in this project.
+
+## License
+See the [LICENSE](LICENSE) file for details.
