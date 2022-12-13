@@ -164,9 +164,9 @@ Start the containers:
 podman-compose -f solace_ha-podman-compose.yaml start
 ```
 ## Documentation
-[Solace Rootless Containers](https://docs.solace.com/Software-Broker/Container-Tasks/rootless-containers.htm)
-[Podman compose, an implementation of Compose Spec with Podman](https://github.com/containers/podman-compose)
-[Exploring the Podman secret command](https://www.redhat.com/sysadmin/new-podman-secrets-command)
+- [Solace Rootless Containers](https://docs.solace.com/Software-Broker/Container-Tasks/rootless-containers.htm)
+- [Podman compose, an implementation of Compose Spec with Podman](https://github.com/containers/podman-compose)
+- [Exploring the Podman secret command](https://www.redhat.com/sysadmin/new-podman-secrets-command)
 
 ## Resources
 This is not an officially supported Solace product.
