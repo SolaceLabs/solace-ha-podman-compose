@@ -80,7 +80,7 @@ file locks                          (-x) unlimited
 ```
 
 ### Generate a server certificate for the brokers
-To enable TLS on the brokers you need TLS certificates. For test purpose only, [certificates](certificates) are available on this repo, you can use them or generate new one.</br>
+To enable TLS on the brokers you need TLS certificates. For test purpose only, [certificates](certificates) are available on this repo, you can use them or generate new ones.</br>
 For example, to generate a self-signed certificate for the three nodes of the HA group:
 ```
 SUBJECT='/CN=solaceprimary.solace.local/O=Solace/OU=PSG/L=Paris/ST=PARIS/C=FR'
@@ -99,6 +99,13 @@ openssl req \
 Generate a file containing the server certificate and its private key:
 ```
 cat solace.key solace.pem > solace_withkey.pem
+```
+
+#### Podman secrets
+Optionally, you can store the passphrase and certificate files on a podman secret:
+```
+podman secret create passphrase.txt passphrase.txt
+podman secret create solace_withkey.pem solace_withkey.pem
 ```
 
 ### Create and start the containers
