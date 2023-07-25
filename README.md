@@ -80,9 +80,10 @@ file locks                          (-x) unlimited
 ```
 
 ### Generate a server certificate for the brokers
-To enable TLS on the brokers you need TLS certificates. For test purpose only, [certificates](certificates) are available on this repo, you can use them or generate new ones.</br>
-For example, to generate a self-signed certificate for the three nodes of the HA group:
+To enable TLS on the brokers you need TLS certificates. For example, to generate a self-signed certificate for the three nodes of the HA group:
 ```
+cd certificates
+
 SUBJECT='/CN=solaceprimary.solace.local/O=Solace/OU=PSG/L=Paris/ST=PARIS/C=FR'
 SAN='DNS:solaceprimary.solace.local,DNS:solacebackup.solace.local,DNS:solacemonitor.solace.local'
 openssl req \
